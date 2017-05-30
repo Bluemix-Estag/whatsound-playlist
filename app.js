@@ -7,7 +7,7 @@ var express = require('express');
 var app = express();
 var cfenv = require('cfenv');
 var fs = require('fs');
-var PORT = 3000;
+var PORT = 8080;
 var bodyParser = require('body-parser');
 
 // load local VCAP configuration
@@ -113,7 +113,7 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
             var foundTrack;
             
             for (var tr in tracks) {
-                if (track.track_name.localeCompare(tracks[tr].track_name) == 0) {
+                if (track.uri.localeCompare(tracks[tr].uri) == 0) {
                     existingTrack = true;
                     foundTrack = tr;
                     for (var vt in tracks[tr].voters) {
