@@ -45,7 +45,7 @@ Failure for double votes:
 ```
 
 
-#REST API to get ranking:
+# REST API to get ranking:
 ```
     POST https://whatsound-playlist.mybluemix.net/whatsound/api/v1/playlist/insert
 
