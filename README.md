@@ -1,16 +1,105 @@
-# Node.js Cloudant Sample
+# WhatSound PlayList MicroService
 
-This application demonstrates how to use the Bluemix Cloudant NoSQL DB service.  It helps users organize their favorite files. The UI talks to a RESTful Express CRUD backend API.
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/IBM-Bluemix/nodejs-cloudant)
 
-## Run the app locally
+Endpoint to get a JSON object from CLoudantDB as response
 
-1. [Install Node.js][]
-+ cd into this project's root directory
-+ Copy the value for the VCAP_SERVICES envirionment variable from the application running in Bluemix and paste it in a `vcap-local.json` file
-+ Run `npm install` to install the app's dependencies
-+ Run `npm start` to start the app
-+ Access the running app in a browser at <http://localhost:6001>
+#REST API to insert voted track:
 
-[Install Node.js]: https://nodejs.org/en/download/
+```
+    POST https://whatsound-playlist.mybluemix.net/whatsound/api/v1/playlist/insert
+
+    Request Body: 
+
+    {
+	"track":{
+		"track_name": "Shape of You",
+		"voter": {
+			"name": "Edison",
+			"photo": "url"
+		},
+		"uri": "spotify:track:123"
+	    }
+    }
+```
+
+
+
+# Response for 
+
+Success: 
+```
+ {
+   "message": "Vote computed correctly",
+   "status": true
+ }
+```
+
+
+Failure for double votes: 
+```
+{
+  "message": "Forbidden, already voted.",
+  "status": false
+}
+```
+
+
+#REST API to get ranking:
+```
+    POST https://whatsound-playlist.mybluemix.net/whatsound/api/v1/playlist/insert
+
+    Request Body: 
+
+    {
+	"track":{
+		"track_name": "Shape of You",
+		"voter": {
+			"name": "Edison",
+			"photo": "url"
+		},
+		"uri": "spotify:track:123"
+	    }
+    }
+```
+
+
+
+# Response for 
+
+Success: 
+```
+
+    GET https://whatsound-playlist.mybluemix.net/whatsound/api/v1/playlist/ranking
+  {
+   "ranking": [
+     {
+       "track_name": "Shape of You",
+       "votes": 2,
+       "voters": [
+         {
+           "name": "Rabah",
+           "photo": "url"
+         },
+         {
+           "name": "Edison",
+           "photo": "url"
+         }
+       ],
+       "uri": "spotify:track:123"
+     }
+   ],
+   "status": true
+ }
+```
+
+
+Failure: 
+```
+ {
+   "message": "Could not handle the request",
+   "status": false
+ }
+```
+
+
