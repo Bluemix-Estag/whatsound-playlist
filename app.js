@@ -7,7 +7,7 @@ var routes = require('./routes');
 var app = express();
 var cfenv = require('cfenv');
 var fs = require('fs');
-var PORT = 8080;
+
 var bodyParser = require('body-parser');
 var http = require('http');
 
@@ -82,17 +82,48 @@ function initCloudant() {
         revs_info: true
     }, function (err, doc) {
         if (err) {
+            console.log('Ranking document does not exist.');
             database.insert({
                 "tracks": []
             },'ranking',function(err,doc){
                 if(!err){
-                    console.log(doc);
+                    console.log('Ranking document created.');
                 }else{
                     console.log(err);
                 }
             });
         } else {
+            console.log('Ranking document already exists.');
+        }
+    });
 
+    database.get('setList',{
+        revs_info: true
+    },function(err,doc){
+        if(err){
+            fs.stat('./setlist-cloudant.json', function (err, stat) {
+                if (err && err.code === 'ENOENT') {
+                    // file does not exist
+                    console.log('No setList-cloudant.json');
+                } else if (err) {
+                    console.log('Error retrieving local setList: ', err.code);
+                } else {
+                    var setListLocal = require("./setlist-cloudant.json");
+                    console.log('Local setList loaded.');
+                    database.insert(setListLocal,'setList',function(err,doc){
+                        if(err){
+                            console.log('Error on creating setList document.');
+                        }else{
+                            console.log('setList document created successfully');
+                        }
+                    });
+                }
+});
+
+
+
+        }else{
+            console.log('setList document already exists.');
         }
     });
 }

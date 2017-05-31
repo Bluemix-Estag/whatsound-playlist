@@ -1,0 +1,29 @@
+{
+  "services": {
+    "cloudantNoSQLDB": [
+      {
+        "name": "whatsound-playlist-cloudantNoSQLDB",
+        "label": "cloudantNoSQLDB",
+        "plan": "Lite",
+        "credentials": {
+            "username": "b3c18805-ec30-4a1a-8541-4a860c6ab2b5-bluemix",
+            "password": "a3aed1551393b0af4c5c6f4bbb9f44852b04427c1ae290b8b3ca9fd056d798a4",
+            "host": "b3c18805-ec30-4a1a-8541-4a860c6ab2b5-bluemix.cloudant.com",
+            "port": 443,
+            "url": "https://b3c18805-ec30-4a1a-8541-4a860c6ab2b5-bluemix:a3aed1551393b0af4c5c6f4bbb9f44852b04427c1ae290b8b3ca9fd056d798a4@b3c18805-ec30-4a1a-8541-4a860c6ab2b5-bluemix.cloudant.com"
+            }
+      }
+    ],
+    "conversation": [
+      {
+        "label": "conversation",
+        "name": "bot-demo-conversation",
+        "credentials": {
+            "url": "https://gateway.watsonplatform.net/conversation/api",
+            "password": "",
+            "username": ""
+        }
+      }
+    ]
+  }
+}
