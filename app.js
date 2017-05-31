@@ -194,12 +194,39 @@ app.get('/whatsound/api/v1/playlist/ranking', function(req,res){
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json({ranking,status:true});
         }
-    })
+    });
 });
 
 
 
-
+app.get('/whatsound/api/v1/setlist', function(req,res){
+    database.get('setList', {
+        revs_info:true
+    },function(err,doc){
+        if(err){
+            res.setHeader('Content-Type', 'application/json');
+            res.status(400).json({message: "Could not handle the request",status: false});
+        }else{
+            var setlist = [];
+            setlist= doc.tracks;
+            for(var i=0;i<setlist.length-1;i++){
+                var max = i;
+                for(var j=i+1;j<setlist.length;j++){
+                    if(setlist[j].votes>setlist[max].votes){
+                        max = j;
+                    }
+                }
+                if(max != i){
+                    var aux = setlist[i];
+                    setlist[i] = setlist[max];
+                    setlist[max] = aux;
+                }
+            }
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).json({setlist,status:true});
+        }
+    });
+});
 
 
 

@@ -2,5 +2,5 @@
 
 
 exports.setlist(function(req,res){
-    res.render('setlist.html');
+    res.render('setlist.ejs');
 });
