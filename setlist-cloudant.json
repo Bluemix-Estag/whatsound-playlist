@@ -1,0 +1,160 @@
+{
+  "_id": "setList",
+  "_rev": "8-eb61fc5ff3449f2bcd65c55e374a6bec",
+  "tracks": [
+    {
+      "track_name": "Don't You(Forget About Me)",
+      "votes": 0,
+      "voters": [],
+      "id": 1,
+      "uri": "spotify:track:0A4PZuepTcIQVvA5m7R0M1"
+    },
+    {
+      "track_name": "I Love Rock 'n' Roll",
+      "votes": 0,
+      "voters": [],
+      "id": 2,
+      "uri": "spotify:track:28QYUQEivnHe8mHnxX6391"
+    },
+    {
+      "track_name": "The Man Who Sold The World",
+      "votes": 0,
+      "voters": [],
+      "id": 3,
+      "uri": "spotify:track:15VRO9CQwMpbqUYA7e6Hwg"
+    },
+    {
+      "track_name": "One Vision - Single Version",
+      "votes": 0,
+      "voters": [],
+      "id": 4,
+      "uri": "spotify:track:6c359yP0zdP6HVwN2ybZbQ"
+    },
+    {
+      "track_name": "Under Pressure - Remastered 2011",
+      "votes": 0,
+      "voters": [],
+      "id": 5,
+      "uri": "spotify:track:2aSFLiDPreOVP6KHiWk4lF"
+    },
+    {
+      "track_name": "Sometimes I Feel Like Screaming",
+      "votes": 0,
+      "voters": [],
+      "id": 6,
+      "uri": "spotify:track:7gRUKCARPXRBdE4JokAbso"
+    },
+    {
+      "track_name": "Go Your Own Way - 2004 Remastered Edition",
+      "votes": 0,
+      "voters": [],
+      "id": 7,
+      "uri": "spotify:track:4xh7W7tlNMIczFhupCPniY"
+    },
+    {
+      "track_name": "T.N.T",
+      "votes": 0,
+      "voters": [],
+      "id": 8,
+      "uri": "spotify:track:7LRMbd3LEoV5wZJvXT1Lwb"
+    },
+    {
+      "track_name": "Whole Lotta Love",
+      "votes": 0,
+      "voters": [],
+      "id": 9,
+      "uri": "spotify:track:0hCB0YR03f6AmQaHbwWDe8"
+    },
+    {
+      "track_name": "Everlong",
+      "votes": 0,
+      "voters": [],
+      "id": 10,
+      "uri": "spotify:track:5UWwZ5lm5PKu6eKsHAGxOk"
+    },
+    {
+      "track_name": "Somebody Told Me",
+      "votes": 0,
+      "voters": [],
+      "id": 11,
+      "uri": "spotify:track:7HGTkn2aX7MNdKs7nV2xBt"
+    },
+    {
+      "track_name": "Sex on Fire",
+      "votes": 0,
+      "voters": [],
+      "id": 12,
+      "uri": "spotify:track:0ntQJM78wzOLVeCUAW7Y45"
+    },
+    {
+      "track_name": "Psycho Killer - 2005 Remastered Version",
+      "votes": 0,
+      "voters": [],
+      "id": 13,
+      "uri": "spotify:track:1i6N76fftMZhijOzFQ5ZtL"
+    },
+    {
+      "track_name": "Candy",
+      "votes": 0,
+      "voters": [],
+      "id": 14,
+      "uri": "spotify:track:6sFpmdsk4UDMcDWdy4T1Kc"
+    },
+    {
+      "track_name": "Who Knew",
+      "votes": 0,
+      "voters": [],
+      "id": 15,
+      "uri": "spotify:track:7FpoD2ZlcBSj05rEHSZoiB"
+    },
+    {
+      "track_name": "While My Guitar Gently Weeps - Remastered 2009",
+      "votes": 0,
+      "voters": [],
+      "id": 16,
+      "uri": "spotify:track:389QX9Q1eUOEZ19vtzzI9O"
+    },
+    {
+      "track_name": "Suspicious Minds",
+      "votes": 0,
+      "voters": [],
+      "id": 17,
+      "uri": "spotify:track:1OtWwtGFPXVhdAVKZHwrNF"
+    },
+    {
+      "track_name": "Stay",
+      "votes": 0,
+      "voters": [],
+      "id": 18,
+      "uri": "spotify:track:1weEqgqTn03x8hmJ2mHMET"
+    },
+    {
+      "track_name": "Cocaine",
+      "votes": 0,
+      "voters": [],
+      "id": 19,
+      "uri": "spotify:track:3ykSdTGmYPFl8pDBXer1zG"
+    },
+    {
+      "track_name": "Sunshine Of Your Love",
+      "votes": 0,
+      "voters": [],
+      "id": 20,
+      "uri": "spotify:track:6FRwDxXsvSasw0y2eDArsz"
+    },
+    {
+      "track_name": "Purple Rain",
+      "votes": 0,
+      "voters": [],
+      "id": 21,
+      "uri": "spotify:track:54X78diSLoUDI3joC2bjMz"
+    },
+    {
+      "track_name": "Like a Stone",
+      "votes": 0,
+      "voters": [],
+      "id": 22,
+      "uri": "spotify:track:3YuaBvuZqcwN3CEAyyoaei"
+    }
+  ]
+}

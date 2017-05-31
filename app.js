@@ -196,9 +196,6 @@ app.get('/whatsound/api/v1/playlist/ranking', function(req,res){
         }
     });
 });
-
-
-
 app.get('/whatsound/api/v1/setlist', function(req,res){
     database.get('setList', {
         revs_info:true
@@ -226,6 +223,65 @@ app.get('/whatsound/api/v1/setlist', function(req,res){
             res.status(200).json({setlist,status:true});
         }
     });
+});
+
+
+app.post('/whatsound/api/v1/setlist/vote', function(req,res){
+    var vote = req.body;
+    console.log(vote);
+    database.get('setList', {
+        revs_info:true
+    },function(err,doc){
+        if(err){
+
+        }else {
+            var tracks = doc.tracks;
+            var existingTrack = false;
+            var existingVoter = false;
+            var foundTrack;
+
+            // Interface vai possuir a lista das tracks e cada uma contendo um id, o id passado é o que identifica a música
+
+            for (var tr in tracks) {
+                if (vote.track_id == tracks[tr].id) {
+                    existingTrack = true;
+                    foundTrack = tr;
+                    for (var vt in tracks[tr].voters) {
+                        if (tracks[tr].voters[vt].name.localeCompare(vote.voter.name) == 0) {
+                            existingVoter = true;
+                            res.setHeader('Content-Type', 'application/json');
+                            res.status(403).json({
+                                message: "Forbidden, already voted.",
+                                status: false
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (!existingVoter && existingTrack) {
+                tracks[foundTrack].votes += 1;
+                tracks[foundTrack].voters.push(vote.voter);
+                doc.tracks = tracks;
+                database.insert(doc, 'setList', function (err, doc) {
+                    if (err) {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(400).json({
+                            message: "Could not handle the request",
+                            status: false
+                        });
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).json({
+                            message: "Vote computed correctly",
+                            status: true
+                        });
+                    }
+                });
+
+            }
+        }
+    })
 });
 
 
