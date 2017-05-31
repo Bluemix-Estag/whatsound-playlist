@@ -3,12 +3,13 @@
  */
 
 var express = require('express');
-
+var routes = require('./routes');
 var app = express();
 var cfenv = require('cfenv');
 var fs = require('fs');
 var PORT = 8080;
 var bodyParser = require('body-parser');
+var http = require('http');
 
 // load local VCAP configuration
 var vcapLocal = null;
@@ -16,7 +17,8 @@ var appEnv = null;
 var appEnvOpts = {};
 
 app.use(bodyParser.json());
-
+app.set('view engine', 'ejs');
+app.set('port', process.env.PORT || 3000);
 
 fs.stat('./vcap-local.json', function (err, stat) {
     if (err && err.code === 'ENOENT') {
@@ -195,5 +197,13 @@ app.get('/whatsound/api/v1/playlist/ranking', function(req,res){
     })
 });
 
-app.listen(PORT);
-console.log("Listening on port " + PORT);
+
+
+
+
+
+
+
+http.createServer(app).listen(app.get('port'), '0.0.0.0', function() {
+    console.log('Express server listening on port ' + app.get('port'));
+});
