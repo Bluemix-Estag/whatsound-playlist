@@ -170,7 +170,7 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
                     existingTrack = true;
                     foundTrack = tr;
                     for (var vt in tracks[tr].voters) {
-                        if (tracks[tr].voters[vt].name.localeCompare(track.voter.name) == 0) {
+                        if (tracks[tr].voters[vt].nameUser.localeCompare(track.voter.nameUser) == 0) {
                             existingVoter = true;
                             res.setHeader('Content-Type', 'application/json');
                             res.status(403).json({
