@@ -223,6 +223,69 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
     });
 });
 
+
+// Zerar os votos da musica no ranking geral.
+app.post('/whatsound/api/v1/ranking/update', function(req,res){
+    var track = req.query;
+
+    // Parsing query to integer for finding music uri
+    var out = JSON.stringify(req.query);
+    var out2 = out.replace(/[^0-9]/g, ''); 
+    var trackUri = parseInt(out2);
+    
+    // ending of parsing to integer
+    
+    console.log("Received " + JSON.stringify(track));
+    database.get('ranking', {
+        revs_info: true
+    }, function (err, doc) {
+        if (err) {
+            console.error(err);
+        } else {
+            var songCounter = doc.songCounter;
+            console.log("SongCounter : "+songCounter);
+            var tracks = doc.tracks;
+            var foundTrack;
+            var existingTrack = false;
+
+
+            for (var tr in tracks) {
+                if (trackUri == tracks[tr].uri) {
+                    console.log("Uri igual");
+                    foundTrack = tr;
+                    existingTrack = true;
+                }
+            }
+                    if(existingTrack){
+                        tracks[foundTrack].votes = 0;
+                        tracks[foundTrack].counter = songCounter;
+                        songCounter += 1;
+                    }
+                doc.songCounter = songCounter;
+                doc.tracks = tracks;
+                database.insert(doc, 'ranking', function (err, doc) {
+                    if (err) {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(400).json({
+                            message: "Could not handle the request",
+                            status: false
+                        });
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).json({
+                            message: "Vote of this music is now 0",
+                            status: true
+                        });
+                    }
+                });
+            
+        }
+    });
+});
+
+
+
+
 app.get('/whatsound/api/v1/playlist/ranking', function(req,res){
     database.get('ranking', {
         revs_info:true
@@ -231,8 +294,13 @@ app.get('/whatsound/api/v1/playlist/ranking', function(req,res){
             res.setHeader('Content-Type', 'application/json');
             res.status(400).json({message: "Could not handle the request",status: false});
         }else{
+            var songCounter;
+            songCounter = doc.songCounter;
+            console.log(songCounter);
+            
             var ranking = [];
             ranking= doc.tracks;
+            
             for(var i=0;i<ranking.length-1;i++){
                 var max = i;
                 for(var j=i+1;j<ranking.length;j++){
@@ -247,10 +315,11 @@ app.get('/whatsound/api/v1/playlist/ranking', function(req,res){
                 }
             }
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json({ranking,status:true});
+            res.status(200).json({songCounter,ranking,status:true});
         }
     });
 });
+
 app.get('/whatsound/api/v1/setlist', function(req,res){
     database.get('setList', {
         revs_info:true
@@ -260,6 +329,8 @@ app.get('/whatsound/api/v1/setlist', function(req,res){
             res.status(400).json({message: "Could not handle the request",status: false});
         }else{
             var setlist = [];
+            var songCounter;
+            songCounter = doc.songCounter;
             setlist= doc.tracks;
             for(var i=0;i<setlist.length-1;i++){
                 var max = i;
@@ -275,20 +346,69 @@ app.get('/whatsound/api/v1/setlist', function(req,res){
                 }
             }
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json({setlist,status:true});
+            res.status(200).json({songCounter,setlist,status:true});
         }
     });
 });
-// A FAZER
-app.post('/whatsound/api/v1/ranking/update', function(req,res){
-    var updated = req.body;
-    // Daq
+// Zerar os votos da musica da setlist
+app.post('/whatsound/api/v1/setlist/update', function(req,res){
+    var track = req.query;
+
+    // Parsing query to integer for finding music uri
+    var out = JSON.stringify(req.query);
+    var out2 = out.replace(/[^0-9]/g, ''); 
+    var trackUri = parseInt(out2);
+    
+    // ending of parsing to integer
+    
+    console.log("Received " + JSON.stringify(track));
+    database.get('setList', {
+        revs_info:true
+    },function(err,doc){
+        if(err){
+            res.setHeader('Content-Type', 'application/json');
+            res.status(400).json({message: "Could not handle the request",status: false});
+        }else{
+            var songCounter = doc.songCounter;
+            console.log("SongCounter : "+songCounter);
+            var tracks = doc.tracks;
+            var foundTrack;
+            var existingTrack = false;
+
+
+            for (var tr in tracks) {
+                if (trackUri == tracks[tr].uri) {
+                    console.log("Uri igual");
+                    foundTrack = tr;
+                    existingTrack = true;
+                }
+            }
+                    if(existingTrack){
+                        tracks[foundTrack].votes = 0;
+                        tracks[foundTrack].counter = songCounter;
+                        songCounter += 1;
+                    }
+                doc.songCounter = songCounter;
+                doc.tracks = tracks;
+                database.insert(doc, 'setList', function (err, doc) {
+                    if (err) {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(400).json({
+                            message: "Could not handle the request",
+                            status: false
+                        });
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).json({
+                            message: "Vote computed correctly",
+                            status: true
+                        });
+                    }
+                });
+            
+        }
+    });
 });
-
-
-//
-
-
 
 app.post('/whatsound/api/v1/setlist/vote', function(req,res){
     var vote = req.body;
