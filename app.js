@@ -84,6 +84,7 @@ function initCloudant() {
         if (err) {
             console.log('Ranking document does not exist.');
             database.insert({
+                "songCounter": 0,
                 "tracks": []
             },'ranking',function(err,doc){
                 if(!err){
@@ -153,7 +154,7 @@ app.use(function (req, res, next) {
 //INSERT INTO RANKING
 app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
     var track = req.body.track;
-    // console.log("Received " + JSON.stringify(track));
+    console.log("Received " + JSON.stringify(track));
     database.get('ranking', {
         revs_info: true
     }, function (err, doc) {
@@ -166,7 +167,8 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
             var foundTrack;
             
             for (var tr in tracks) {
-                if (track.uri.localeCompare(tracks[tr].uri) == 0) {
+                if (track.uri == tracks[tr].uri) {
+                    console.log("Uri igual");
                     existingTrack = true;
                     foundTrack = tr;
                     for (var vt in tracks[tr].voters) {
@@ -186,6 +188,8 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
                 tracks.push({
                     "track_name": track.track_name,
                     "votes": 1,
+                    "totalVoter": 1,
+                    "counter": 0,
                     "voters": [track.voter],
                     "uri": track.uri
                 });
@@ -275,10 +279,20 @@ app.get('/whatsound/api/v1/setlist', function(req,res){
         }
     });
 });
+// A FAZER
+app.post('/whatsound/api/v1/ranking/update', function(req,res){
+    var updated = req.body;
+    // Daq
+});
+
+
+//
+
 
 
 app.post('/whatsound/api/v1/setlist/vote', function(req,res){
     var vote = req.body;
+    console.log("entrou no setlist");
     console.log(vote);
     database.get('setList', {
         revs_info:true
@@ -292,13 +306,14 @@ app.post('/whatsound/api/v1/setlist/vote', function(req,res){
             var foundTrack;
 
             // Interface vai possuir a lista das tracks e cada uma contendo um id, o id passado é o que identifica a música
-
+            // console.log(tracks);
             for (var tr in tracks) {
-                if (vote.track_id == tracks[tr].id) {
+                if (vote.uri == tracks[tr].uri) {
                     existingTrack = true;
                     foundTrack = tr;
                     for (var vt in tracks[tr].voters) {
-                        if (tracks[tr].voters[vt].name.localeCompare(vote.voter.name) == 0) {
+                        if ((tracks[tr].voters[vt].nameUser) === (vote.voter.nameUser))  {
+                            console.log("entrou na comparacao dos voters");
                             existingVoter = true;
                             res.setHeader('Content-Type', 'application/json');
                             res.status(403).json({
