@@ -225,16 +225,16 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
 
 
 // Zerar os votos da musica no ranking geral.
-app.post('/whatsound/api/v1/ranking/update', function (req, res) {
+app.post('/whatsound/api/v1/ranking/update', function(req,res){
     var track = req.query;
 
     // Parsing query to integer for finding music uri
     var out = JSON.stringify(req.query);
-    var out2 = out.replace(/[^0-9]/g, '');
+    var out2 = out.replace(/[^0-9]/g, ''); 
     var trackUri = parseInt(out2);
-
+    
     // ending of parsing to integer
-
+    
     console.log("Received " + JSON.stringify(track));
     database.get('ranking', {
         revs_info: true
@@ -243,7 +243,7 @@ app.post('/whatsound/api/v1/ranking/update', function (req, res) {
             console.error(err);
         } else {
             var songCounter = doc.songCounter;
-            console.log("SongCounter : " + songCounter);
+            console.log("SongCounter : "+songCounter);
             var tracks = doc.tracks;
             var foundTrack;
             var existingTrack = false;
@@ -256,29 +256,35 @@ app.post('/whatsound/api/v1/ranking/update', function (req, res) {
                     existingTrack = true;
                 }
             }
-            if (existingTrack) {
-                tracks[foundTrack].votes = 0;
-                tracks[foundTrack].counter = songCounter;
-                songCounter += 1;
-            }
-            doc.songCounter = songCounter;
-            doc.tracks = tracks;
-            database.insert(doc, 'ranking', function (err, doc) {
-                if (err) {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.status(400).json({
-                        message: "Could not handle the request",
-                        status: false
-                    });
-                } else {
-                    res.setHeader('Content-Type', 'application/json');
-                    res.status(200).json({
-                        message: "Vote of this music is now 0",
-                        status: true
-                    });
-                }
-            });
+                    console.log(tracks[foundTrack].voters);
 
+                    if(existingTrack){
+                        
+                        tracks[foundTrack].votes = 0;
+                        tracks[foundTrack].counter = songCounter;
+                        tracks[foundTrack].voters = [] ;
+                        console.log(tracks[foundTrack].voters);
+
+                        songCounter += 1;
+                    }
+                doc.songCounter = songCounter;
+                doc.tracks = tracks;
+                database.insert(doc, 'ranking', function (err, doc) {
+                    if (err) {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(400).json({
+                            message: "Could not handle the request",
+                            status: false
+                        });
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.status(200).json({
+                            message: "Vote of this music is now 0",
+                            status: true
+                        });
+                    }
+                });
+            
         }
     });
 });
