@@ -86,10 +86,10 @@ function initCloudant() {
             database.insert({
                 "songCounter": 0,
                 "tracks": []
-            },'ranking',function(err,doc){
-                if(!err){
+            }, 'ranking', function (err, doc) {
+                if (!err) {
                     console.log('Ranking document created.');
-                }else{
+                } else {
                     console.log(err);
                 }
             });
@@ -98,10 +98,10 @@ function initCloudant() {
         }
     });
 
-    database.get('setList',{
+    database.get('setList', {
         revs_info: true
-    },function(err,doc){
-        if(err){
+    }, function (err, doc) {
+        if (err) {
             fs.stat('./setlist-cloudant.json', function (err, stat) {
                 if (err && err.code === 'ENOENT') {
                     // file does not exist
@@ -111,19 +111,19 @@ function initCloudant() {
                 } else {
                     var setListLocal = require("./setlist-cloudant.json");
                     console.log('Local setList loaded.');
-                    database.insert(setListLocal,'setList',function(err,doc){
-                        if(err){
+                    database.insert(setListLocal, 'setList', function (err, doc) {
+                        if (err) {
                             console.log('Error on creating setList document.');
-                        }else{
+                        } else {
                             console.log('setList document created successfully');
                         }
                     });
                 }
-});
+            });
 
 
 
-        }else{
+        } else {
             console.log('setList document already exists.');
         }
     });
@@ -165,7 +165,7 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
             var existingTrack = false;
             var existingVoter = false;
             var foundTrack;
-            
+
             for (var tr in tracks) {
                 if (track.uri == tracks[tr].uri) {
                     console.log("Uri igual");
@@ -225,16 +225,16 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
 
 
 // Zerar os votos da musica no ranking geral.
-app.post('/whatsound/api/v1/ranking/update', function(req,res){
+app.post('/whatsound/api/v1/ranking/update', function (req, res) {
     var track = req.query;
 
     // Parsing query to integer for finding music uri
     var out = JSON.stringify(req.query);
-    var out2 = out.replace(/[^0-9]/g, ''); 
+    var out2 = out.replace(/[^0-9]/g, '');
     var trackUri = parseInt(out2);
-    
+
     // ending of parsing to integer
-    
+
     console.log("Received " + JSON.stringify(track));
     database.get('ranking', {
         revs_info: true
@@ -243,7 +243,7 @@ app.post('/whatsound/api/v1/ranking/update', function(req,res){
             console.error(err);
         } else {
             var songCounter = doc.songCounter;
-            console.log("SongCounter : "+songCounter);
+            console.log("SongCounter : " + songCounter);
             var tracks = doc.tracks;
             var foundTrack;
             var existingTrack = false;
@@ -256,29 +256,29 @@ app.post('/whatsound/api/v1/ranking/update', function(req,res){
                     existingTrack = true;
                 }
             }
-                    if(existingTrack){
-                        tracks[foundTrack].votes = 0;
-                        tracks[foundTrack].counter = songCounter;
-                        songCounter += 1;
-                    }
-                doc.songCounter = songCounter;
-                doc.tracks = tracks;
-                database.insert(doc, 'ranking', function (err, doc) {
-                    if (err) {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.status(400).json({
-                            message: "Could not handle the request",
-                            status: false
-                        });
-                    } else {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.status(200).json({
-                            message: "Vote of this music is now 0",
-                            status: true
-                        });
-                    }
-                });
-            
+            if (existingTrack) {
+                tracks[foundTrack].votes = 0;
+                tracks[foundTrack].counter = songCounter;
+                songCounter += 1;
+            }
+            doc.songCounter = songCounter;
+            doc.tracks = tracks;
+            database.insert(doc, 'ranking', function (err, doc) {
+                if (err) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(400).json({
+                        message: "Could not handle the request",
+                        status: false
+                    });
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(200).json({
+                        message: "Vote of this music is now 0",
+                        status: true
+                    });
+                }
+            });
+
         }
     });
 });
@@ -286,91 +286,108 @@ app.post('/whatsound/api/v1/ranking/update', function(req,res){
 
 
 
-app.get('/whatsound/api/v1/playlist/ranking', function(req,res){
+app.get('/whatsound/api/v1/playlist/ranking', function (req, res) {
     database.get('ranking', {
-        revs_info:true
-    },function(err,doc){
-        if(err){
+        revs_info: true
+    }, function (err, doc) {
+        if (err) {
             res.setHeader('Content-Type', 'application/json');
-            res.status(400).json({message: "Could not handle the request",status: false});
-        }else{
+            res.status(400).json({
+                message: "Could not handle the request",
+                status: false
+            });
+        } else {
             var songCounter;
             songCounter = doc.songCounter;
             console.log(songCounter);
-            
+
             var ranking = [];
-            ranking= doc.tracks;
-            
-            for(var i=0;i<ranking.length-1;i++){
+            ranking = doc.tracks;
+
+            for (var i = 0; i < ranking.length - 1; i++) {
                 var max = i;
-                for(var j=i+1;j<ranking.length;j++){
-                    if(ranking[j].votes>ranking[max].votes){
+                for (var j = i + 1; j < ranking.length; j++) {
+                    if (ranking[j].votes > ranking[max].votes) {
                         max = j;
                     }
                 }
-                if(max != i){
+                if (max != i) {
                     var aux = ranking[i];
                     ranking[i] = ranking[max];
                     ranking[max] = aux;
                 }
             }
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json({songCounter,ranking,status:true});
+            res.status(200).json({
+                songCounter,
+                ranking,
+                status: true
+            });
         }
     });
 });
 
-app.get('/whatsound/api/v1/setlist', function(req,res){
+app.get('/whatsound/api/v1/setlist', function (req, res) {
     database.get('setList', {
-        revs_info:true
-    },function(err,doc){
-        if(err){
+        revs_info: true
+    }, function (err, doc) {
+        if (err) {
             res.setHeader('Content-Type', 'application/json');
-            res.status(400).json({message: "Could not handle the request",status: false});
-        }else{
+            res.status(400).json({
+                message: "Could not handle the request",
+                status: false
+            });
+        } else {
             var setlist = [];
             var songCounter;
             songCounter = doc.songCounter;
-            setlist= doc.tracks;
-            for(var i=0;i<setlist.length-1;i++){
+            setlist = doc.tracks;
+            for (var i = 0; i < setlist.length - 1; i++) {
                 var max = i;
-                for(var j=i+1;j<setlist.length;j++){
-                    if(setlist[j].votes>setlist[max].votes){
+                for (var j = i + 1; j < setlist.length; j++) {
+                    if (setlist[j].votes > setlist[max].votes) {
                         max = j;
                     }
                 }
-                if(max != i){
+                if (max != i) {
                     var aux = setlist[i];
                     setlist[i] = setlist[max];
                     setlist[max] = aux;
                 }
             }
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json({songCounter,setlist,status:true});
+            res.status(200).json({
+                songCounter,
+                setlist,
+                status: true
+            });
         }
     });
 });
 // Zerar os votos da musica da setlist
-app.post('/whatsound/api/v1/setlist/update', function(req,res){
+app.post('/whatsound/api/v1/setlist/update', function (req, res) {
     var track = req.query;
 
     // Parsing query to integer for finding music uri
     var out = JSON.stringify(req.query);
-    var out2 = out.replace(/[^0-9]/g, ''); 
+    var out2 = out.replace(/[^0-9]/g, '');
     var trackUri = parseInt(out2);
-    
+
     // ending of parsing to integer
-    
+
     console.log("Received " + JSON.stringify(track));
     database.get('setList', {
-        revs_info:true
-    },function(err,doc){
-        if(err){
+        revs_info: true
+    }, function (err, doc) {
+        if (err) {
             res.setHeader('Content-Type', 'application/json');
-            res.status(400).json({message: "Could not handle the request",status: false});
-        }else{
+            res.status(400).json({
+                message: "Could not handle the request",
+                status: false
+            });
+        } else {
             var songCounter = doc.songCounter;
-            console.log("SongCounter : "+songCounter);
+            console.log("SongCounter : " + songCounter);
             var tracks = doc.tracks;
             var foundTrack;
             var existingTrack = false;
@@ -383,43 +400,43 @@ app.post('/whatsound/api/v1/setlist/update', function(req,res){
                     existingTrack = true;
                 }
             }
-                    if(existingTrack){
-                        tracks[foundTrack].votes = 0;
-                        tracks[foundTrack].counter = songCounter;
-                        songCounter += 1;
-                    }
-                doc.songCounter = songCounter;
-                doc.tracks = tracks;
-                database.insert(doc, 'setList', function (err, doc) {
-                    if (err) {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.status(400).json({
-                            message: "Could not handle the request",
-                            status: false
-                        });
-                    } else {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.status(200).json({
-                            message: "Vote computed correctly",
-                            status: true
-                        });
-                    }
-                });
-            
+            if (existingTrack) {
+                tracks[foundTrack].votes = 0;
+                tracks[foundTrack].counter = songCounter;
+                songCounter += 1;
+            }
+            doc.songCounter = songCounter;
+            doc.tracks = tracks;
+            database.insert(doc, 'setList', function (err, doc) {
+                if (err) {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(400).json({
+                        message: "Could not handle the request",
+                        status: false
+                    });
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(200).json({
+                        message: "Vote computed correctly",
+                        status: true
+                    });
+                }
+            });
+
         }
     });
 });
 
-app.post('/whatsound/api/v1/setlist/vote', function(req,res){
+app.post('/whatsound/api/v1/setlist/vote', function (req, res) {
     var vote = req.body;
     console.log("entrou no setlist");
     console.log(vote);
     database.get('setList', {
-        revs_info:true
-    },function(err,doc){
-        if(err){
+        revs_info: true
+    }, function (err, doc) {
+        if (err) {
 
-        }else {
+        } else {
             var tracks = doc.tracks;
             var existingTrack = false;
             var existingVoter = false;
@@ -432,7 +449,7 @@ app.post('/whatsound/api/v1/setlist/vote', function(req,res){
                     existingTrack = true;
                     foundTrack = tr;
                     for (var vt in tracks[tr].voters) {
-                        if ((tracks[tr].voters[vt].nameUser) === (vote.voter.nameUser))  {
+                        if ((tracks[tr].voters[vt].nameUser) === (vote.voter.nameUser)) {
                             console.log("entrou na comparacao dos voters");
                             existingVoter = true;
                             res.setHeader('Content-Type', 'application/json');
@@ -470,9 +487,55 @@ app.post('/whatsound/api/v1/setlist/vote', function(req,res){
     })
 });
 
+app.get('/whatsound/api/v1/setlist/reset', function (req, res) {
+    var token = (req.query.token != null && req.query.token != "undefined") ? (req.query.token):null;
+    if(token === ("123quatro") || token === ("123quatro") ){
+        fs.stat('./setlist-cloudant.json', function (err, stat) {
+        if (err && err.code === 'ENOENT') {
+            // file does not exist
+            console.log('No setList-cloudant.json');
+        } else if (err) {
+            console.log('Error retrieving local setList: ', err.code);
+        } else {
+            var setListReset = require("./setlist-cloudant-onlyinfo.json");
+            console.log('Local resetted setList loaded.');
+            database.get('setList', {
+                revs_info: true
+            }, function (err, doc) {
+                if (err) {
+                    console.log('setList document does not exist.');
+                    database.insert(setListReset, 'setList', function (err, doc) {
+                        if (!err) {
+                            console.log('setList document resetted.');
+                            res.status(200).json({status:true, message:"setList resetted"});
+                        } else {
+                            console.log(err);
+                            res.status(512).json({status:false, message:"setList not resetted"});
+                        }
+                    });
+                } else {
+                    setListReset._rev = doc._rev;
+                    database.insert(setListReset, 'setList', function (err, doc) {
+                        if (!err) {
+                            console.log('setList document resetted.');
+                            res.status(200).json({status:true, message:"setList resetted"});
+                        } else {
+                            console.log(err);
+                            res.status(512).json({status:false, message:"setList not resetted"});
+                        }
+                    });
+                }
+            });
+        }
+    });
+    }else{
+        res.status(415).json("Not authorized");
+    }
+    
+});
 
 
 
-http.createServer(app).listen(app.get('port'), '0.0.0.0', function() {
+http.createServer(app).listen(app.get('port'), '0.0.0.0', function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
