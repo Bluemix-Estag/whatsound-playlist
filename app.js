@@ -401,8 +401,7 @@ app.post('/whatsound/api/v1/setlist/update', function (req, res) {
                 }
             }
             if (existingTrack) {
-                tracks[foundTrack].votes = 0;
-                tracks[foundTrack].counter = songCounter;
+                tracks.splice(tr,1);
                 songCounter += 1;
             }
             doc.songCounter = songCounter;
