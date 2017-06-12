@@ -431,10 +431,10 @@ app.get('/whatsound/api/v1/setlist/update', function (req, res) {
             if (existingTrack) {
                 console.log(foundTrack)
                 // Colocar o songCounter no 
-                trash.push(tracks[foundTrack]);
-                tracks[foundTrack].counter = songCounter;
-                tracks.splice(foundTrack,1);
                 songCounter += 1;
+                tracks[foundTrack].counter = songCounter;
+                trash.push(tracks[foundTrack]);
+                tracks.splice(foundTrack,1);
             }
             doc.songCounter = songCounter;
             doc.tracks = tracks;
