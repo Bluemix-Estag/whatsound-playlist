@@ -245,7 +245,7 @@ app.post('/whatsound/api/v1/playlist/insert', function (req, res) {
 
 
 // Zerar os votos da musica no ranking geral.
-app.post('/whatsound/api/v1/ranking/update', function(req,res){
+app.get('/whatsound/api/v1/ranking/update', function(req,res){
     var track = req.query;
 
     // Parsing query to integer for finding music uri
@@ -279,7 +279,6 @@ app.post('/whatsound/api/v1/ranking/update', function(req,res){
                     console.log(tracks[foundTrack].voters);
 
                     if(existingTrack){
-                        
                         tracks[foundTrack].votes = 0;
                         tracks[foundTrack].counter = songCounter;
                         tracks[foundTrack].voters = [] ;
@@ -368,6 +367,7 @@ app.get('/whatsound/api/v1/setlist', function (req, res) {
             var songCounter;
             songCounter = doc.songCounter;
             setlist = doc.tracks;
+            trashs = doc.trashs;
             for (var i = 0; i < setlist.length - 1; i++) {
                 var max = i;
                 for (var j = i + 1; j < setlist.length; j++) {
@@ -385,19 +385,21 @@ app.get('/whatsound/api/v1/setlist', function (req, res) {
             res.status(200).json({
                 songCounter,
                 setlist,
+                trashs,
                 status: true
             });
         }
     });
 });
 // Zerar os votos da musica da setlist
-app.post('/whatsound/api/v1/setlist/update', function (req, res) {
+app.get('/whatsound/api/v1/setlist/update', function (req, res) {
     var track = req.query;
-
     // Parsing query to integer for finding music uri
     var out = JSON.stringify(req.query);
     var out2 = out.replace(/[^0-9]/g, '');
     var trackUri = parseInt(out2);
+    var foundTrack;
+
 
     // ending of parsing to integer
 
@@ -415,7 +417,7 @@ app.post('/whatsound/api/v1/setlist/update', function (req, res) {
             var songCounter = doc.songCounter;
             console.log("SongCounter : " + songCounter);
             var tracks = doc.tracks;
-            var foundTrack;
+            var trash = doc.trashs;
             var existingTrack = false;
 
 
@@ -427,11 +429,16 @@ app.post('/whatsound/api/v1/setlist/update', function (req, res) {
                 }
             }
             if (existingTrack) {
-                tracks.splice(tr,1);
+                console.log(foundTrack)
+                // Colocar o songCounter no 
+                trash.push(tracks[foundTrack]);
+                tracks[foundTrack].counter = songCounter;
+                tracks.splice(foundTrack,1);
                 songCounter += 1;
             }
             doc.songCounter = songCounter;
             doc.tracks = tracks;
+            doc.trashs   = trash;
             database.insert(doc, 'setList', function (err, doc) {
                 if (err) {
                     res.setHeader('Content-Type', 'application/json');
@@ -442,7 +449,7 @@ app.post('/whatsound/api/v1/setlist/update', function (req, res) {
                 } else {
                     res.setHeader('Content-Type', 'application/json');
                     res.status(200).json({
-                        message: "Vote computed correctly",
+                        message: "Vote zerado com sucesso",
                         status: true
                     });
                 }

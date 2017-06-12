@@ -1,10 +1,10 @@
 applications:
 - path: .
-  memory: 128M
+  memory: 512M
   instances: 1
   domain: mybluemix.net
   name: whatsound-playlist
   host: whatsound-playlist
-  disk_quota: 256M
+  disk_quota: 1024M
   services:
   - whatsound-playlist-cloudantNoSQLDB
